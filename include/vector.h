@@ -17,7 +17,8 @@
         T *body;                                 \
         size_t size;                             \
         size_t capacity;                         \
-        size_t element_size;                     \
+        const size_t element_size;               \
+        const _GenericVecTrait impl;             \
         void (*put)(struct ADHOC *, size_t, T);  \
         T *(*get)(struct ADHOC *, size_t);       \
         void (*push)(struct ADHOC *, T);         \
@@ -26,14 +27,14 @@
 
 #define DefineVec(NewType, T)                                           \
     typedef Vec(T) NewType;                                             \
-    T *_NewType##_get(NewType *self, size_t index) {                    \
+    T *_##NewType##_get(NewType *self, size_t index) {                  \
         if (index < self->capacity) {                                   \
             return &self->body[index];                                  \
         } else {                                                        \
             return NULL;                                                \
         }                                                               \
     }                                                                   \
-    void _NewType##_put(NewType *self, size_t index, T value) {         \
+    void _##NewType##_put(NewType *self, size_t index, T value) {       \
         errno = 0;                                                      \
         if (index < self->capacity) {                                   \
             self->body[index] = value;                                  \
@@ -42,7 +43,7 @@
             errno = ERANGE;                                             \
         }                                                               \
     }                                                                   \
-    void _NewType##_push(NewType *self, T value) {                      \
+    void _##NewType##_push(NewType *self, T value) {                    \
         if (self->size < self->capacity) {                              \
             self->body[self->size++] = value;                           \
         } else {                                                        \
@@ -50,38 +51,41 @@
             self->body[self->size++] = value;                           \
         }                                                               \
     }                                                                   \
-    T *_NewType##_pop(NewType *self) {                                  \
+    T *_##NewType##_pop(NewType *self) {                                \
         if (self->size != 0){                                           \
             return &self->body[--self->size];                           \
         } else {                                                        \
             return NULL;                                                \
         }                                                               \
     }                                                                   \
-    NewType _NewType##_new() {                                          \
+    NewType _##NewType##_new() {                                        \
         return (NewType){.size = 0,                                     \
                          .capacity = 0,                                 \
                          .element_size = sizeof(T),                     \
                          .body = NULL,                                  \
-                         .put = _NewType##_put,                         \
-                         .get = _NewType##_get,                         \
-                         .push = _NewType##_push,                       \
-                         .pop = _NewType##_pop};                        \
+                         .impl = Vec,                                   \
+                         .put = _##NewType##_put,                       \
+                         .get = _##NewType##_get,                       \
+                         .push = _##NewType##_push,                     \
+                         .pop = _##NewType##_pop};                      \
     }                                                                   \
-    NewType _NewType##_with_capacity(size_t initial_capacity) {         \
+    NewType _##NewType##_with_capacity(size_t initial_capacity) {       \
         return (NewType){.size = 0,                                     \
                          .capacity = initial_capacity,                  \
                          .element_size = sizeof(T),                     \
                          .body = malloc(initial_capacity * sizeof(T)),  \
-                         .put = _NewType##_put,                         \
-                         .get = _NewType##_get,                         \
-                         .push = _NewType##_push,                       \
-                         .pop = _NewType##_pop};                        \
+                         .impl = Vec,                                   \
+                         .put = _##NewType##_put,                       \
+                         .get = _##NewType##_get,                       \
+                         .push = _##NewType##_push,                     \
+                         .pop = _##NewType##_pop};                      \
     }                                                                   \
     const VecBuilder(NewType) NewType##_ = {                            \
-        .new = _NewType##_new,                                          \
-        .with_capacity = _NewType##_with_capacity};                     \
+        .new = _##NewType##_new,                                        \
+        .with_capacity = _##NewType##_with_capacity};                   \
 
 
+// First arg is pointer to a Vec value
 typedef struct {
     void (*destroy)(void *);
     void (*realloc)(void *);

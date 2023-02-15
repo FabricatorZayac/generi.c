@@ -16,12 +16,12 @@ int main(int argc, char *argv[]) {
     assert(a.capacity == 8);
     assert(a.size == 5);
 
-    int *arr = (int[]){6, 5, 4, 3, 2};
+    int arr[] = {6, 5, 4, 3, 2};
     assert(memcmp(a.body, arr, a.size * sizeof(int)) == 0);
 
-    Vec.shrink_to(&a, 7);
+    a.impl.shrink_to(&a, 7);
     assert(a.capacity == 7);
-    Vec.shrink_to_fit(&a);
+    a.impl.shrink_to_fit(&a);
     assert(a.capacity == 5);
 
     a.put(&a, 0, 2);
@@ -38,13 +38,13 @@ int main(int argc, char *argv[]) {
     assert(*foo == 2);
     assert(a.size == 4);
 
-    Vec.shrink_to_fit(&a);
+    a.impl.shrink_to_fit(&a);
     assert(a.capacity == 4);
 
-    Vec.reserve(&a, 5);
+    a.impl.reserve(&a, 5);
     assert(a.capacity == 9);
 
-    Vec.destroy(&a);
+    a.impl.destroy(&a);
 
     return 0;
 }
