@@ -1,12 +1,17 @@
 #include "vector.h"
+#include "list.h"
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <errno.h>
+#include <string.h>
 
-void Vec_destroy(void *self) {
+void destroy(void *self) {
     free(((Vec(void *) *)self)->body);
 }
 
-void Vec_realloc(void *self) {
+void resize(void *self) {
     Vec(void *) *vec = self;
     if (vec->size == 0) {
         vec->body = malloc(vec->element_size);
@@ -17,7 +22,7 @@ void Vec_realloc(void *self) {
     }
 }
 
-void Vec_shrink_to_fit(void *self) {
+void shrink_to_fit(void *self) {
     Vec(void *) *vec = self;
     if (vec->capacity > vec->size) {
         vec->body = realloc(vec->body, vec->element_size * vec->size);
@@ -25,7 +30,7 @@ void Vec_shrink_to_fit(void *self) {
     }
 }
 
-void Vec_shrink_to(void *self, size_t min_cap) {
+void shrink_to(void *self, size_t min_cap) {
     Vec(void *) *vec = self;
     if (vec->capacity > vec->size && vec->capacity > min_cap) {
         size_t new_cap;
@@ -39,7 +44,7 @@ void Vec_shrink_to(void *self, size_t min_cap) {
     }
 }
 
-void Vec_reserve(void *self, size_t additional) {
+void reserve(void *self, size_t additional) {
     Vec(void *) *vec = self;
     if (vec->capacity < vec->size + additional) {
         vec->body = realloc(vec->body, (vec->size + additional) * vec->element_size);
@@ -47,7 +52,7 @@ void Vec_reserve(void *self, size_t additional) {
     }
 }
 
-void Vec_truncate(void *self, size_t new_size) {
+void truncate(void *self, size_t new_size) {
     Vec(void *) *vec = self;
     if (new_size <= vec->size) {
         vec->body = realloc(vec->body, new_size * vec->element_size);
@@ -56,9 +61,50 @@ void Vec_truncate(void *self, size_t new_size) {
     }
 }
 
-const _GenericVecTrait Vec = {.destroy = Vec_destroy,
-                              .realloc = Vec_realloc,
-                              .shrink_to = Vec_shrink_to,
-                              .shrink_to_fit = Vec_shrink_to_fit,
-                              .reserve = Vec_reserve,
-                              .truncate = Vec_truncate};
+void *get(void *self, size_t index) {
+    Vec(uint8_t) *vec = self;
+    if (index < vec->capacity) {
+        return &vec->body[vec->element_size * index];
+    } else {
+        return NULL;
+    }
+}
+
+void *pop(void *self) {
+    Vec(uint8_t) *vec = self;
+    if (vec->size != 0){
+        return &vec->body[--vec->size * vec->element_size];
+    } else {
+        return NULL;
+    }
+}
+
+void push(void *self, uint8_t *value_bytes) {
+    Vec(uint8_t) *vec = self;
+    if (vec->size >= vec->capacity) {
+        vec->impl.realloc(vec);
+    }
+    memmove(vec->body + (vec->size * vec->element_size), value_bytes, vec->element_size);
+    vec->size++;
+}
+
+void put(void *self, size_t index, uint8_t *value_bytes) {
+    errno = 0;
+    Vec(uint8_t) *vec = self;
+
+    if (index < vec->capacity) {
+        memmove(vec->body + (index * vec->element_size), value_bytes, vec->element_size);
+        if (vec->size < index) vec->size = index;
+    } else {
+        errno = ERANGE;
+    }
+}
+
+const VecTrait _VecImpl = {
+    .list = {.get = get, .pop = pop, .push = push, .put = put},
+    .destroy = destroy,
+    .realloc = resize,
+    .shrink_to = shrink_to,
+    .shrink_to_fit = shrink_to_fit,
+    .reserve = reserve,
+    .truncate = truncate};
