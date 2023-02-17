@@ -11,11 +11,28 @@ DefineLinkedList(LinkedListInt, int);
 void ll_test() {
     LinkedListInt foo = LinkedListInt_.new();
 
-    foo.push_back(&foo, 6);
+    /* foo.push_back(&foo, 6); */
     foo.push_back(&foo, 5);
-    foo.push_back(&foo, 4);
+    /* foo.push_back(&foo, 4); */
     foo.push_back(&foo, 3);
     foo.push_back(&foo, 2);
+    foo.push_front(&foo, 6);
+    /* foo.insert(&foo, 0, 6); */
+    foo.insert(&foo, 2, 4);
+    {
+        LinkedNode(int) *i = (void *)foo.head;
+        for (; i != NULL; i = i->next) {
+            printf("%d\n", i->body);
+        }
+        printf("\n");
+        i = (void *)foo.tail;
+        for (; i != NULL; i = i->prev) {
+            printf("%d\n", i->body);
+        }
+        printf("\n");
+    }
+
+    assert(foo.get(&foo, 5) == NULL);
 
     assert(foo.get(&foo, 1) != NULL);
     assert(*foo.get(&foo, 1) == 5);
@@ -24,6 +41,41 @@ void ll_test() {
     assert(a != NULL);
     assert(*a == 6);
     free(a);
+
+    a = foo.pop_front(&foo);
+    assert(a != NULL);
+    assert(*a == 5);
+    free(a);
+
+    LinkedListInt bar = LinkedListInt_.new();
+
+    bar.push_back(&bar, 100);
+    bar.push_back(&bar, 200);
+    bar.push_front(&bar, 9000);
+    bar.push_front(&bar, 123);
+    int *arr = (int[]){123, 9000, 100, 200};
+    for (size_t i = 0; i < 4; i++) {
+        /* printf("%6d|%6d\n", arr[i], *bar.get(&bar, i)); */
+        assert(arr[i] == *bar.get(&bar, i));
+    }
+
+    foo.impl.list.append(&foo, &bar);
+    a = foo.pop_front(&foo);
+    assert(a != NULL);
+    assert(*a == 4);
+    free(a);
+
+    a = foo.pop_back(&foo);
+    assert(a != NULL);
+    assert(*a == 200);
+    free(a);
+
+    printf("\n");
+    arr = (int[]){3, 2, 123, 9000, 100};
+    for (size_t i = 0; i < 5; i++) {
+        /* printf("%6d|%6d\n", arr[i], *foo.get(&foo, i)); */
+        assert(arr[i] == *foo.get(&foo, i));
+    }
 
     foo.impl.destroy(&foo);
 }

@@ -70,7 +70,7 @@ void *Vec_get(void *self, size_t index) {
     }
 }
 
-void *Vec_pop(void *self) {
+void *Vec_pop_back(void *self) {
     Vec(char) *vec = self;
     if (vec->size != 0){
         void *result = memcpy(malloc(vec->element_size),
@@ -82,7 +82,7 @@ void *Vec_pop(void *self) {
     }
 }
 
-void Vec_push(void *self, char *value_bytes) {
+void Vec_push_back(void *self, char *value_bytes) {
     Vec(char) *vec = self;
     if (vec->size >= vec->capacity) {
         vec->impl.realloc(vec);
@@ -103,11 +103,13 @@ void Vec_put(void *self, size_t index, char *value_bytes) {
     }
 }
 
-const VecTrait VecImpl = {
-    .list = {.get = Vec_get, .pop_back = Vec_pop, .push_back = Vec_push, .put = Vec_put},
-    .destroy = Vec_destroy,
-    .realloc = Vec_resize,
-    .shrink_to = Vec_shrink_to,
-    .shrink_to_fit = Vec_shrink_to_fit,
-    .reserve = Vec_reserve,
-    .truncate = Vec_truncate};
+const VecTrait VecImpl = {.list = {.get = Vec_get,
+                                   .pop_back = Vec_pop_back,
+                                   .push_back = Vec_push_back,
+                                   .put = Vec_put},
+                          .destroy = Vec_destroy,
+                          .realloc = Vec_resize,
+                          .shrink_to = Vec_shrink_to,
+                          .shrink_to_fit = Vec_shrink_to_fit,
+                          .reserve = Vec_reserve,
+                          .truncate = Vec_truncate};

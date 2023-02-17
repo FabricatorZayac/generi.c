@@ -20,39 +20,66 @@ void ll_destroy(void *self) {
 void ll_append(void *self, void *other) {
     LinkedList(void *) *list = self;
     LinkedList(void *) *other_list = other;
-    LinkedNode(void *) *tail = (void *)list->head;
-    while (tail != NULL) {
-        tail->next = (void *)list->head;
-    }
-    tail = (void *)other_list->head;
+    list->tail->next = (void *)other_list->head;
+    other_list->head->prev = (void *)list->tail;
+    list->tail = (void *)other_list->tail;
+    list->size += other_list->size;
 }
 
-void ll_push(void *self, char *value_bytes) {
+void ll_push_back(void *self, char *value_bytes) {
     LinkedList(char *) *list = self;
     typedef LinkedNode(char *) bytenode;
     bytenode *new_node = malloc(sizeof(bytenode));
     memcpy(&new_node->body, value_bytes, list->element_size);
+    new_node->next = NULL;
 
     if (list->head == NULL) {
-        new_node->next = NULL;
         list->head = (void *)new_node;
-        return;
     } else {
-        LinkedNode(char *) *i = (void *)list->head;
-        for (; i->next != NULL; i = i->next) {}
-        i->next = (void *)new_node;
+        new_node->prev = (void *)list->tail;
+        list->tail->next = (void *)new_node;
+    }
+    list->tail = (void *)new_node;
+    list->size++;
+}
+
+void ll_push_front(void *self, char *value_bytes) {
+    LinkedList(char *) *list = self;
+    typedef LinkedNode(char *) bytenode;
+    bytenode *new_node = malloc(sizeof(bytenode));
+    memcpy(&new_node->body, value_bytes, list->element_size);
+    new_node->prev = NULL;
+
+    if (list->head == NULL) {
+        list->tail = (void *)new_node;
+    } else {
+        new_node->next = (void *)list->head;
+        list->head->prev = (void *)new_node;
+    }
+    list->head = (void *)new_node;
+    list->size++;
+}
+
+void *ll_pop_back(void *self) {
+    LinkedList(void *) *list = self;
+    if (list->tail != NULL) {
+        void *result = &list->tail->body;
+        list->tail = list->tail->prev;
+        list->tail->next = NULL;
+        list->size--;
+        return result;
+    } else {
+        return NULL;
     }
 }
 
 void *ll_pop_front(void *self) {
     LinkedList(void *) *list = self;
     if (list->head != NULL) {
-        void *result = memcpy(malloc(list->element_size),
-                              &list->head->body,
-                              list->element_size);
-        void *buf = list->head;
+        void *result = &list->head->body;
         list->head = list->head->next;
-        free(buf);
+        list->head->prev = NULL;
+        list->size--;
         return result;
     } else {
         return NULL;
@@ -61,16 +88,78 @@ void *ll_pop_front(void *self) {
 
 void *ll_get(void *self, size_t index) {
     LinkedList(void *) *list = self;
-    LinkedNode(void *) *current = (void *)list->head;
-    for (size_t i = 0; i < index; i++) {
-        if (current->next == NULL) return NULL;
-        current = current->next;
+    LinkedNode(void *) *current;
+    if (index >= list->size || index < 0) return NULL;
+    if (index < list->size / 2) {
+        current = (void *)list->head;
+        for (size_t i = 0; i < index; i++) {
+            current = current->next;
+        }
+    } else {
+        current = (void *)list->tail;
+        for (size_t i = list->size - 1; i > index; i--) {
+            current = current->prev;
+        }
     }
     return &current->body;
 }
 
-const LinkedListTrait _LinkedListImpl = {
-    .list = {.push_back = ll_push, .get = ll_get},
-    .pop_front = ll_pop_front,
-    .destroy = ll_destroy,
-    .append = ll_append};
+void ll_insert(void *self, size_t index, char *value_bytes) {
+    LinkedList(void *) *list = self;
+    if (index == 0) {
+        ll_push_front(self, value_bytes);
+    } else if (index == list->size) {
+        ll_push_back(self, value_bytes);
+    } else {
+        errno = 0;
+        typedef LinkedNode(char *) bytenode;
+        bytenode *new_node = malloc(sizeof(bytenode));
+        memcpy(&new_node->body, value_bytes, list->element_size);
+
+       /*
+        * This works because body is the first element is it's address is the
+        * address of the struct
+        */
+        LinkedNode(void *) *at = (void *)list->get(list, index);
+        if (at == NULL) {
+            errno = ERANGE;
+            return;
+        } else {
+            new_node->next = (void *)at;
+            new_node->prev = (void *)at->prev;
+            at->prev->next = (void *)new_node;
+            at->prev = (void *)new_node;
+
+            list->size++;
+        }
+    }
+}
+
+// TODO test
+void *ll_remove(void *self, size_t index) {
+    LinkedList(void *) *list = self;
+    if (index == 0) {
+        return ll_pop_front(self);
+    } else if (index == list->size) {
+        return ll_pop_back(self);
+    } else {
+        LinkedNode(void *) *at = (void *)list->get(list, index);
+        if (at == NULL) {
+            return NULL;
+        } else {
+            at->prev->next = at->next;
+            at->next->prev = at->prev;
+            return at;
+        }
+    }
+}
+
+const LinkedListTrait _LinkedListImpl = {.list = {.push_back = ll_push_back,
+                                                  .push_front = ll_push_front,
+                                                  .pop_back = ll_pop_back,
+                                                  .pop_front = ll_pop_front,
+                                                  .append = ll_append,
+                                                  .get = ll_get,
+                                                  .remove = ll_remove,
+                                                  .insert = ll_insert},
+                                         .destroy = ll_destroy};

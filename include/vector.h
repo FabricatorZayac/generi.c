@@ -22,14 +22,14 @@
 
 #define DefineVec(NewType, T)                                           \
     typedef Vec(T) NewType;                                             \
-                   void NewType##_push_back(NewType *self, T value) {   \
-        return self->impl.list.push_back(self, (char *)&value);      \
+    void NewType##_push_back(NewType *self, T value) {                  \
+        return self->impl.list.push_back(self, (char *)&value);         \
     }                                                                   \
     T *NewType##_pop_back(NewType *self) {                              \
         return self->impl.list.pop_back(self);                          \
     }                                                                   \
     void NewType##_put(NewType *self, size_t index, T value) {          \
-        return self->impl.list.put(self, index, (char *)&value);     \
+        return self->impl.list.put(self, index, (char *)&value);        \
     }                                                                   \
     T *NewType##_get(NewType *self, size_t index) {                     \
         return self->impl.list.get(self, index);                        \
