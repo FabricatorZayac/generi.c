@@ -14,19 +14,19 @@
         size_t capacity;                         \
         const size_t element_size;               \
         const VecTrait impl;                     \
-        void (*push)(struct ADHOC *, T);         \
-        T *(*pop)(struct ADHOC *);               \
+        void (*push_back)(struct ADHOC *, T);    \
+        T *(*pop_back)(struct ADHOC *);          \
         void (*put)(struct ADHOC *, size_t, T);  \
         T *(*get)(struct ADHOC *, size_t);       \
     }
 
 #define DefineVec(NewType, T)                                           \
     typedef Vec(T) NewType;                                             \
-    void _##NewType##_push(NewType *self, T value) {                    \
-        return self->impl.list.push(self, (uint8_t *)&value);           \
+    void _##NewType##_push_back(NewType *self, T value) {               \
+        return self->impl.list.push_back(self, (uint8_t *)&value);      \
     }                                                                   \
-    T *_##NewType##_pop(NewType *self) {                                \
-        return self->impl.list.pop(self);                               \
+    T *_##NewType##_pop_back(NewType *self) {                           \
+        return self->impl.list.pop_back(self);                          \
     }                                                                   \
     void _##NewType##_put(NewType *self, size_t index, T value) {       \
         return self->impl.list.put(self, index, (uint8_t *)&value);     \
@@ -42,8 +42,8 @@
                          .impl = _VecImpl,                              \
                          .put = _##NewType##_put,                       \
                          .get = _##NewType##_get,                       \
-                         .push = _##NewType##_push,                     \
-                         .pop = _##NewType##_pop};                      \
+                         .push_back = _##NewType##_push_back,           \
+                         .pop_back = _##NewType##_pop_back};            \
     }                                                                   \
     NewType _##NewType##_with_capacity(size_t capacity) {               \
         return (NewType){.size = 0,                                     \
@@ -53,8 +53,8 @@
                          .impl = _VecImpl,                              \
                          .put = _##NewType##_put,                       \
                          .get = _##NewType##_get,                       \
-                         .push = _##NewType##_push,                     \
-                         .pop = _##NewType##_pop};                      \
+                         .push_back = _##NewType##_push_back,           \
+                         .pop_back = _##NewType##_pop_back};            \
     }                                                                   \
     NewType _##NewType##_from_arr(T *arr, size_t bytecap) {             \
         return (NewType){.size = bytecap / sizeof(T),                   \
@@ -64,8 +64,8 @@
                          .impl = _VecImpl,                              \
                          .put = _##NewType##_put,                       \
                          .get = _##NewType##_get,                       \
-                         .push = _##NewType##_push,                     \
-                         .pop = _##NewType##_pop};                      \
+                         .push_back = _##NewType##_push_back,           \
+                         .pop_back = _##NewType##_pop_back};            \
     }                                                                   \
     const struct {                                                      \
         NewType (*new)();                                               \

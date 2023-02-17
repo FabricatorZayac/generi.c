@@ -71,7 +71,7 @@ void *ll_get(void *self, size_t index) {
 }
 
 const LinkedListTrait _LinkedListImpl = {
-    .list = {.push = ll_push, .get = ll_get},
+    .list = {.push_back = ll_push, .get = ll_get},
     .pop_front = ll_pop_front,
     .destroy = ll_destroy,
     .append = ll_append};

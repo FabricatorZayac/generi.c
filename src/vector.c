@@ -1,11 +1,12 @@
-#include "vector.h"
-#include "list.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
 #include <string.h>
+
+#include "vector.h"
+#include "list.h"
 
 void Vec_destroy(void *self) {
     free(((Vec(void *) *)self)->body);
@@ -104,7 +105,7 @@ void Vec_put(void *self, size_t index, uint8_t *value_bytes) {
 }
 
 const VecTrait _VecImpl = {
-    .list = {.get = Vec_get, .pop = Vec_pop, .push = Vec_push, .put = Vec_put},
+    .list = {.get = Vec_get, .pop_back = Vec_pop, .push_back = Vec_push, .put = Vec_put},
     .destroy = Vec_destroy,
     .realloc = Vec_resize,
     .shrink_to = Vec_shrink_to,

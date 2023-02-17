@@ -11,11 +11,11 @@ DefineLinkedList(LinkedListInt, int);
 void ll_test() {
     LinkedListInt foo = LinkedListInt_.new();
 
-    foo.push(&foo, 6);
-    foo.push(&foo, 5);
-    foo.push(&foo, 4);
-    foo.push(&foo, 3);
-    foo.push(&foo, 2);
+    foo.push_back(&foo, 6);
+    foo.push_back(&foo, 5);
+    foo.push_back(&foo, 4);
+    foo.push_back(&foo, 3);
+    foo.push_back(&foo, 2);
 
     assert(foo.get(&foo, 1) != NULL);
     assert(*foo.get(&foo, 1) == 5);
@@ -32,11 +32,11 @@ DefineVec(VecInt, int);
 void vec_test() {
     VecInt foo = VecInt_.new();
 
-    foo.push(&foo, 6);
-    foo.push(&foo, 5);
-    foo.push(&foo, 4);
-    foo.push(&foo, 3);
-    foo.push(&foo, 2);
+    foo.push_back(&foo, 6);
+    foo.push_back(&foo, 5);
+    foo.push_back(&foo, 4);
+    foo.push_back(&foo, 3);
+    foo.push_back(&foo, 2);
     assert(foo.capacity == 8);
     assert(foo.size == 5);
 
@@ -58,7 +58,7 @@ void vec_test() {
     assert(foo.get(&foo, 10) == NULL);
     assert(foo.impl.list.get(&foo, 10) == NULL);
 
-    int *a = foo.pop(&foo);
+    int *a = foo.pop_back(&foo);
     assert(*a == 2);
     assert(foo.size == 4);
     free(a);
