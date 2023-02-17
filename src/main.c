@@ -1,12 +1,34 @@
 #include <errno.h>
 #include <assert.h>
+#include <stdio.h>
 #include <string.h>
 #include <stddef.h>
 
+#include "linkedlist.h"
 #include "vector.h"
 
-DefineVec(VecInt, int);
+DefineLinkedList(LinkedListInt, int);
+void ll_test() {
+    LinkedListInt foo = LinkedListInt_.new();
 
+    foo.push(&foo, 6);
+    foo.push(&foo, 5);
+    foo.push(&foo, 4);
+    foo.push(&foo, 3);
+    foo.push(&foo, 2);
+
+    assert(foo.get(&foo, 1) != NULL);
+    assert(*foo.get(&foo, 1) == 5);
+
+    int *a = foo.pop_front(&foo);
+    assert(a != NULL);
+    assert(*a == 6);
+    free(a);
+
+    foo.impl.destroy(&foo);
+}
+
+DefineVec(VecInt, int);
 void vec_test() {
     VecInt foo = VecInt_.new();
 
@@ -18,11 +40,7 @@ void vec_test() {
     assert(foo.capacity == 8);
     assert(foo.size == 5);
 
-    int arr[] = {6, 5, 4, 3, 2};
-    assert(memcmp(foo.body, arr, foo.size * sizeof(int)) == 0);
-    for (size_t i = 0; i < foo.size; i++) {
-        assert(*foo.get(&foo, i) == arr[i]);
-    }
+    assert(memcmp(foo.body, (int[]){6, 5, 4, 3, 2}, foo.size * sizeof(int)) == 0);
 
     foo.impl.shrink_to(&foo, 6);
     assert(foo.capacity == 6);
@@ -40,8 +58,12 @@ void vec_test() {
     assert(foo.get(&foo, 10) == NULL);
     assert(foo.impl.list.get(&foo, 10) == NULL);
 
-    assert(*foo.pop(&foo) == 2);
+    int *a = foo.pop(&foo);
+    assert(*a == 2);
     assert(foo.size == 4);
+    free(a);
+
+    assert(memcmp(foo.body, (int[]){6, 5, 2000}, foo.size * sizeof(int)) == 0);
 
     foo.impl.shrink_to_fit(&foo);
     assert(foo.capacity == 4);
@@ -55,13 +77,16 @@ void vec_test() {
 
     foo.impl.destroy(&foo);
 
+
+    int arr[] = {7, 5000, 3, 4};
     VecInt bar = VecInt_.from_arr(arr, sizeof(arr));
     assert(memcmp(bar.body, arr, sizeof(arr)) == 0);
-    assert(bar.size == 5);
-    assert(bar.capacity == 5);
+    assert(bar.size == sizeof(arr) / sizeof(int));
+    assert(bar.capacity == sizeof(arr) / sizeof(int));
 }
 
 int main(int argc, char *argv[]) {
     vec_test();
+    ll_test();
     return 0;
 }

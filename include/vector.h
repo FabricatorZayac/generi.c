@@ -14,25 +14,25 @@
         size_t capacity;                         \
         const size_t element_size;               \
         const VecTrait impl;                     \
-        void (*put)(struct ADHOC *, size_t, T);  \
-        T *(*get)(struct ADHOC *, size_t);       \
         void (*push)(struct ADHOC *, T);         \
         T *(*pop)(struct ADHOC *);               \
+        void (*put)(struct ADHOC *, size_t, T);  \
+        T *(*get)(struct ADHOC *, size_t);       \
     }
 
 #define DefineVec(NewType, T)                                           \
     typedef Vec(T) NewType;                                             \
-    T *_##NewType##_get(NewType *self, size_t index) {                  \
-        return self->impl.list.get(self, index);                        \
-    }                                                                   \
-    void _##NewType##_put(NewType *self, size_t index, T value) {       \
-        return self->impl.list.put(self, index, (uint8_t *)&value);     \
-    }                                                                   \
     void _##NewType##_push(NewType *self, T value) {                    \
         return self->impl.list.push(self, (uint8_t *)&value);           \
     }                                                                   \
     T *_##NewType##_pop(NewType *self) {                                \
         return self->impl.list.pop(self);                               \
+    }                                                                   \
+    void _##NewType##_put(NewType *self, size_t index, T value) {       \
+        return self->impl.list.put(self, index, (uint8_t *)&value);     \
+    }                                                                   \
+    T *_##NewType##_get(NewType *self, size_t index) {                  \
+        return self->impl.list.get(self, index);                        \
     }                                                                   \
     NewType _##NewType##_new() {                                        \
         return (NewType){.size = 0,                                     \
