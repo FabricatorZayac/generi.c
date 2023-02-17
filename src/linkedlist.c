@@ -1,6 +1,5 @@
 #include <errno.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,18 +27,18 @@ void ll_append(void *self, void *other) {
     tail = (void *)other_list->head;
 }
 
-void ll_push(void *self, uint8_t *value_bytes) {
-    LinkedList(uint8_t *) *list = self;
-    typedef LinkedNode(uint8_t *) bytenode;
+void ll_push(void *self, char *value_bytes) {
+    LinkedList(char *) *list = self;
+    typedef LinkedNode(char *) bytenode;
     bytenode *new_node = malloc(sizeof(bytenode));
-    memmove(&new_node->body, value_bytes, list->element_size);
+    memcpy(&new_node->body, value_bytes, list->element_size);
 
     if (list->head == NULL) {
         new_node->next = NULL;
         list->head = (void *)new_node;
         return;
     } else {
-        LinkedNode(uint8_t *) *i = (void *)list->head;
+        LinkedNode(char *) *i = (void *)list->head;
         for (; i->next != NULL; i = i->next) {}
         i->next = (void *)new_node;
     }
@@ -48,9 +47,9 @@ void ll_push(void *self, uint8_t *value_bytes) {
 void *ll_pop_front(void *self) {
     LinkedList(void *) *list = self;
     if (list->head != NULL) {
-        void *result = memmove(malloc(list->element_size),
-                               &list->head->body,
-                               list->element_size);
+        void *result = memcpy(malloc(list->element_size),
+                              &list->head->body,
+                              list->element_size);
         void *buf = list->head;
         list->head = list->head->next;
         free(buf);

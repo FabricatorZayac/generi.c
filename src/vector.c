@@ -1,7 +1,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <errno.h>
 #include <string.h>
 
@@ -63,7 +62,7 @@ void Vec_truncate(void *self, size_t new_size) {
 }
 
 void *Vec_get(void *self, size_t index) {
-    Vec(uint8_t) *vec = self;
+    Vec(char) *vec = self;
     if (index < vec->capacity) {
         return &vec->body[vec->element_size * index];
     } else {
@@ -72,39 +71,39 @@ void *Vec_get(void *self, size_t index) {
 }
 
 void *Vec_pop(void *self) {
-    Vec(uint8_t) *vec = self;
+    Vec(char) *vec = self;
     if (vec->size != 0){
-        void *result = memmove(malloc(vec->element_size),
-                               &vec->body[--vec->size * vec->element_size],
-                               vec->element_size);
+        void *result = memcpy(malloc(vec->element_size),
+                              &vec->body[--vec->size * vec->element_size],
+                              vec->element_size);
         return result;
     } else {
         return NULL;
     }
 }
 
-void Vec_push(void *self, uint8_t *value_bytes) {
-    Vec(uint8_t) *vec = self;
+void Vec_push(void *self, char *value_bytes) {
+    Vec(char) *vec = self;
     if (vec->size >= vec->capacity) {
         vec->impl.realloc(vec);
     }
-    memmove(vec->body + (vec->size * vec->element_size), value_bytes, vec->element_size);
+    memcpy(vec->body + (vec->size * vec->element_size), value_bytes, vec->element_size);
     vec->size++;
 }
 
-void Vec_put(void *self, size_t index, uint8_t *value_bytes) {
+void Vec_put(void *self, size_t index, char *value_bytes) {
     errno = 0;
-    Vec(uint8_t) *vec = self;
+    Vec(char) *vec = self;
 
     if (index < vec->capacity) {
-        memmove(vec->body + (index * vec->element_size), value_bytes, vec->element_size);
+        memcpy(vec->body + (index * vec->element_size), value_bytes, vec->element_size);
         if (vec->size < index) vec->size = index;
     } else {
         errno = ERANGE;
     }
 }
 
-const VecTrait _VecImpl = {
+const VecTrait VecImpl = {
     .list = {.get = Vec_get, .pop_back = Vec_pop, .push_back = Vec_push, .put = Vec_put},
     .destroy = Vec_destroy,
     .realloc = Vec_resize,

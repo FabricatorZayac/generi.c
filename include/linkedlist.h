@@ -23,22 +23,22 @@
 
 #define DefineLinkedList(NewType, T)                                    \
     typedef LinkedList(T) NewType;                                      \
-    void _##NewType##_push_back(NewType *self, T value) {               \
-        self->impl.list.push_back(self, (uint8_t *)&value);             \
+    void NewType##_push_back(NewType *self, T value) {                  \
+        self->impl.list.push_back(self, (char *)&value);                \
     }                                                                   \
-    T *_##NewType##_pop_front(NewType *self) {                          \
+    T *NewType##_pop_front(NewType *self) {                             \
         return self->impl.pop_front(self);                              \
     }                                                                   \
-    T *_##NewType##_get(NewType *self, size_t index) {                  \
+    T *NewType##_get(NewType *self, size_t index) {                     \
         return self->impl.list.get(self, index);                        \
     }                                                                   \
     NewType _##NewType##_new() {                                        \
         return (NewType){.element_size = sizeof(T),                     \
                          .head = NULL,                                  \
                          .impl = _LinkedListImpl,                       \
-                         .get = _##NewType##_get,                       \
-                         .pop_front = _##NewType##_pop_front,           \
-                         .push_back = _##NewType##_push_back};          \
+                         .get = NewType##_get,                          \
+                         .pop_front = NewType##_pop_front,              \
+                         .push_back = NewType##_push_back};             \
     }                                                                   \
     const struct {                                                      \
         NewType (*new)();                                               \

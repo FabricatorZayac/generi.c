@@ -22,59 +22,58 @@
 
 #define DefineVec(NewType, T)                                           \
     typedef Vec(T) NewType;                                             \
-    void _##NewType##_push_back(NewType *self, T value) {               \
-        return self->impl.list.push_back(self, (uint8_t *)&value);      \
+                   void NewType##_push_back(NewType *self, T value) {   \
+        return self->impl.list.push_back(self, (char *)&value);      \
     }                                                                   \
-    T *_##NewType##_pop_back(NewType *self) {                           \
+    T *NewType##_pop_back(NewType *self) {                              \
         return self->impl.list.pop_back(self);                          \
     }                                                                   \
-    void _##NewType##_put(NewType *self, size_t index, T value) {       \
-        return self->impl.list.put(self, index, (uint8_t *)&value);     \
+    void NewType##_put(NewType *self, size_t index, T value) {          \
+        return self->impl.list.put(self, index, (char *)&value);     \
     }                                                                   \
-    T *_##NewType##_get(NewType *self, size_t index) {                  \
+    T *NewType##_get(NewType *self, size_t index) {                     \
         return self->impl.list.get(self, index);                        \
     }                                                                   \
-    NewType _##NewType##_new() {                                        \
+    NewType NewType##_new() {                                           \
         return (NewType){.size = 0,                                     \
                          .capacity = 0,                                 \
                          .element_size = sizeof(T),                     \
                          .body = NULL,                                  \
-                         .impl = _VecImpl,                              \
-                         .put = _##NewType##_put,                       \
-                         .get = _##NewType##_get,                       \
-                         .push_back = _##NewType##_push_back,           \
-                         .pop_back = _##NewType##_pop_back};            \
+                         .impl = VecImpl,                               \
+                         .put = NewType##_put,                          \
+                         .get = NewType##_get,                          \
+                         .push_back = NewType##_push_back,              \
+                         .pop_back = NewType##_pop_back};               \
     }                                                                   \
-    NewType _##NewType##_with_capacity(size_t capacity) {               \
+    NewType NewType##_with_capacity(size_t capacity) {                  \
         return (NewType){.size = 0,                                     \
                          .capacity = capacity,                          \
                          .element_size = sizeof(T),                     \
                          .body = malloc(capacity * sizeof(T)),          \
-                         .impl = _VecImpl,                              \
-                         .put = _##NewType##_put,                       \
-                         .get = _##NewType##_get,                       \
-                         .push_back = _##NewType##_push_back,           \
-                         .pop_back = _##NewType##_pop_back};            \
+                         .impl = VecImpl,                               \
+                         .put = NewType##_put,                          \
+                         .get = NewType##_get,                          \
+                         .push_back = NewType##_push_back,              \
+                         .pop_back = NewType##_pop_back};               \
     }                                                                   \
-    NewType _##NewType##_from_arr(T *arr, size_t bytecap) {             \
+    NewType NewType##_from_arr(T *arr, size_t bytecap) {                \
         return (NewType){.size = bytecap / sizeof(T),                   \
                          .capacity = bytecap / sizeof(T),               \
                          .element_size = sizeof(T),                     \
                          .body = memcpy(malloc(bytecap), arr, bytecap), \
-                         .impl = _VecImpl,                              \
-                         .put = _##NewType##_put,                       \
-                         .get = _##NewType##_get,                       \
-                         .push_back = _##NewType##_push_back,           \
-                         .pop_back = _##NewType##_pop_back};            \
+                         .impl = VecImpl,                               \
+                         .put = NewType##_put,                          \
+                         .get = NewType##_get,                          \
+                         .push_back = NewType##_push_back,              \
+                         .pop_back = NewType##_pop_back};               \
     }                                                                   \
     const struct {                                                      \
         NewType (*new)();                                               \
         NewType (*with_capacity)(size_t capacity);                      \
         NewType (*from_arr)(T *arr, size_t bytecap);                    \
-    } NewType##_ = {                                                    \
-        .new = _##NewType##_new,                                        \
-        .with_capacity = _##NewType##_with_capacity,                    \
-        .from_arr = _##NewType##_from_arr};                             \
+    } NewType##_ = {.new = NewType##_new,                               \
+                    .with_capacity = NewType##_with_capacity,           \
+                    .from_arr = NewType##_from_arr};                    \
 
 typedef struct {
     ListTrait list;
@@ -86,6 +85,6 @@ typedef struct {
     void (*truncate)(void *self, size_t new_cap);
 } VecTrait;
 
-extern const VecTrait _VecImpl;
+extern const VecTrait VecImpl;
 
 #endif // VECTOR_H_
