@@ -145,17 +145,18 @@ void *ll_remove(void *self, size_t index) {
         } else {
             at->prev->next = at->next;
             at->next->prev = at->prev;
+            list->size--;
             return at;
         }
     }
 }
 
-const LinkedListTrait _LinkedListImpl = {.list = {.push_back = ll_push_back,
-                                                  .push_front = ll_push_front,
-                                                  .pop_back = ll_pop_back,
-                                                  .pop_front = ll_pop_front,
-                                                  .append = ll_append,
-                                                  .get = ll_get,
-                                                  .remove = ll_remove,
-                                                  .insert = ll_insert},
-                                         .destroy = ll_destroy};
+const LinkedListTrait LinkedListImpl = {.push_back = ll_push_back,
+                                        .push_front = ll_push_front,
+                                        .pop_back = ll_pop_back,
+                                        .pop_front = ll_pop_front,
+                                        .append = ll_append,
+                                        .get = ll_get,
+                                        .remove = ll_remove,
+                                        .insert = ll_insert,
+                                        .destroy = ll_destroy};

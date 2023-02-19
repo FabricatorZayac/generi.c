@@ -1,8 +1,9 @@
-#include <errno.h>
 #include <assert.h>
-#include <stdio.h>
-#include <string.h>
+#include <errno.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "linkedlist.h"
 #include "vector.h"
@@ -54,12 +55,12 @@ void ll_test() {
     bar.push_front(&bar, 9000);
     bar.push_front(&bar, 123);
     int *arr = (int[]) {123, 9000, 100, 200};
-    for (size_t i = 0; i < 4; i++) {
+    for (size_t i = 0; i < bar.size; i++) {
         /* printf("%6d|%6d\n", arr[i], *bar.get(&bar, i)); */
         assert(arr[i] == *bar.get(&bar, i));
     }
 
-    foo.impl.list.append(&foo, &bar);
+    foo.impl.append(&foo, &bar);
     a = foo.pop_front(&foo);
     assert(a != NULL);
     assert(*a == 4);
@@ -72,8 +73,18 @@ void ll_test() {
 
     printf("\n");
     arr = (int[]) {3, 2, 123, 9000, 100};
-    for (size_t i = 0; i < 5; i++) {
+    for (size_t i = 0; i < foo.size; i++) {
         /* printf("%6d|%6d\n", arr[i], *foo.get(&foo, i)); */
+        assert(arr[i] == *foo.get(&foo, i));
+    }
+
+    a = foo.remove(&foo, 2);
+    assert(a != NULL);
+    assert(*a == 123);
+    free(a);
+
+    arr = (int[]) {3, 2, 9000, 100};
+    for (size_t i = 0; i < foo.size; i++) {
         assert(arr[i] == *foo.get(&foo, i));
     }
 
@@ -114,7 +125,7 @@ void vec_test() {
     assert(errno != 0);
 
     assert(foo.get(&foo, 10) == NULL);
-    assert(foo.impl.list.get(&foo, 10) == NULL);
+    assert(foo.impl.get(&foo, 10) == NULL);
 
     int *a = foo.pop_back(&foo);
     assert(*a == 2);
@@ -148,7 +159,7 @@ void vec_test() {
     bar.push_front(&bar, 57);
     assert(*bar.get(&bar, 0) == 57);
 
-    bar.impl.list.append(&bar, &foo);
+    bar.impl.append(&bar, &foo);
     int arr1[] = {57, 5000, 3, 4, 6, 5};
 
     assert(memcmp(bar.body, arr1, bar.size * sizeof(int)) == 0);

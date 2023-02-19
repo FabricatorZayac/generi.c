@@ -28,51 +28,49 @@
         T *(*remove)(struct ADHOC *, size_t);      \
     }
 
-#define DefineLinkedList(NewType, T)                                \
-    typedef LinkedList(T) NewType;                                  \
-    void NewType##_push_back(NewType *self, T value) {              \
-        self->impl.list.push_back(self, (char *)&value);            \
-    }                                                               \
-    void NewType##_push_front(NewType *self, T value) {             \
-        self->impl.list.push_front(self, (char *)&value);           \
-    }                                                               \
-    T *NewType##_pop_front(NewType *self) {                         \
-        return self->impl.list.pop_front(self);                     \
-    }                                                               \
-    T *NewType##_pop_back(NewType *self) {                          \
-        return self->impl.list.pop_back(self);                      \
-    }                                                               \
-    T *NewType##_get(NewType *self, size_t index) {                 \
-        return self->impl.list.get(self, index);                    \
-    }                                                               \
-    void NewType##_insert(NewType *self, size_t index, T value) {   \
-        return self->impl.list.insert(self, index, (char *)&value); \
-    }                                                               \
-    T *NewType##_remove(NewType *self, size_t index) {              \
-        return self->impl.list.remove(self, index);                 \
-    }                                                               \
-    NewType NewType##_new() {                                       \
-        return (NewType) {.element_size = sizeof(T),                \
-                          .head = NULL,                             \
-                          .size = 0,                                \
-                          .impl = _LinkedListImpl,                  \
-                          .get = NewType##_get,                     \
-                          .insert = NewType##_insert,               \
-                          .remove = NewType##_remove,               \
-                          .pop_front = NewType##_pop_front,         \
-                          .pop_back = NewType##_pop_back,           \
-                          .push_back = NewType##_push_back,         \
-                          .push_front = NewType##_push_front};      \
-    }                                                               \
-    const struct {                                                  \
-        NewType (*new)();                                           \
+#define DefineLinkedList(NewType, T)                                           \
+    typedef LinkedList(T) NewType;                                             \
+    void NewType##_push_back(NewType *self, T value) {                         \
+        self->impl.push_back(self, (char *)&value);                            \
+    }                                                                          \
+    void NewType##_push_front(NewType *self, T value) {                        \
+        self->impl.push_front(self, (char *)&value);                           \
+    }                                                                          \
+    T *NewType##_pop_front(NewType *self) {                                    \
+        return self->impl.pop_front(self);                                     \
+    }                                                                          \
+    T *NewType##_pop_back(NewType *self) { return self->impl.pop_back(self); } \
+    T *NewType##_get(NewType *self, size_t index) {                            \
+        return self->impl.get(self, index);                                    \
+    }                                                                          \
+    void NewType##_insert(NewType *self, size_t index, T value) {              \
+        return self->impl.insert(self, index, (char *)&value);                 \
+    }                                                                          \
+    T *NewType##_remove(NewType *self, size_t index) {                         \
+        return self->impl.remove(self, index);                                 \
+    }                                                                          \
+    NewType NewType##_new() {                                                  \
+        return (NewType) {.element_size = sizeof(T),                           \
+                          .head = NULL,                                        \
+                          .size = 0,                                           \
+                          .impl = LinkedListImpl,                              \
+                          .get = NewType##_get,                                \
+                          .insert = NewType##_insert,                          \
+                          .remove = NewType##_remove,                          \
+                          .pop_front = NewType##_pop_front,                    \
+                          .pop_back = NewType##_pop_back,                      \
+                          .push_back = NewType##_push_back,                    \
+                          .push_front = NewType##_push_front};                 \
+    }                                                                          \
+    const struct {                                                             \
+        NewType (*new)();                                                      \
     } NewType##_ = {.new = NewType##_new};
 
 typedef struct {
-    ListTrait list;
+    DERIVE_LIST
     void (*destroy)(void *self);
 } LinkedListTrait;
 
-extern const LinkedListTrait _LinkedListImpl;
+extern const LinkedListTrait LinkedListImpl;
 
 #endif  // LINKEDLIST_H_

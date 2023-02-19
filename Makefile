@@ -5,7 +5,7 @@
 # @version 0.1
 
 LD          := ld
-CC          := gcc
+CC          := clang
 RMDIR       := rm -rf
 RM          := rm -f
 MKDIR       := mkdir
