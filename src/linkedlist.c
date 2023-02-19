@@ -105,26 +105,22 @@ void *ll_get(void *self, size_t index) {
 }
 
 void ll_insert(void *self, size_t index, char *value_bytes) {
+    errno = 0;
     LinkedList(void *) *list = self;
     if (index == 0) {
         ll_push_front(self, value_bytes);
     } else if (index == list->size) {
         ll_push_back(self, value_bytes);
     } else {
-        errno = 0;
-        typedef LinkedNode(char *) bytenode;
-        bytenode *new_node = malloc(sizeof(bytenode));
-        memcpy(&new_node->body, value_bytes, list->element_size);
-
-       /*
-        * This works because body is the first element is it's address is the
-        * address of the struct
-        */
         LinkedNode(void *) *at = (void *)list->get(list, index);
         if (at == NULL) {
             errno = ERANGE;
             return;
         } else {
+            typedef LinkedNode(char *) bytenode;
+            bytenode *new_node = malloc(sizeof(bytenode));
+            memcpy(&new_node->body, value_bytes, list->element_size);
+
             new_node->next = (void *)at;
             new_node->prev = (void *)at->prev;
             at->prev->next = (void *)new_node;
