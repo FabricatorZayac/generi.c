@@ -5,4 +5,10 @@
 #define TOKENPASTE(x, y) _TOKENPASTE(x, y)  // macro expansion trickery
 #define ADHOC TOKENPASTE(adhoc_, __LINE__)  // nice to have in type macros
 
+#define DERIVE_TRAIT(trait) trait(void, void, trait)
+#define DERIVE(trait, T) trait(T, struct ADHOC)
+
+#define PROXY(trait, S, T) TOKENPASTE(PROXY_, trait)(S, T)
+#define PROXY_ASSIGN(trait, S) TOKENPASTE(PROXY_ASSIGN_, trait)(S)
+
 #endif  // MACROS_H_
