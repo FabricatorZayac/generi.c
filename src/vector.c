@@ -100,18 +100,18 @@ void *Vec_pop_front(void *self) {
     }
 }
 
-void Vec_push_back(void *self, char *value_bytes) {
+void Vec_push_back(void *self, void *value_address) {
     Vec(char) *vec = self;
     if (vec->size >= vec->capacity) {
         vec->impl.resize(vec);
     }
     memcpy(vec->body + (vec->size * vec->element_size),
-           value_bytes,
+           value_address,
            vec->element_size);
     vec->size++;
 }
 
-void Vec_push_front(void *self, char *value_bytes) {
+void Vec_push_front(void *self, void *value_address) {
     Vec(char) *vec = self;
     if (vec->size >= vec->capacity) {
         Vec_resize(vec);
@@ -119,20 +119,19 @@ void Vec_push_front(void *self, char *value_bytes) {
     memmove(vec->body + vec->element_size,
             vec->body,
             vec->size * vec->element_size);
-    memcpy(vec->body, value_bytes, vec->element_size);
+    memcpy(vec->body, value_address, vec->element_size);
     vec->size++;
 }
 
-void Vec_put(void *self, size_t index, char *value_bytes) {
+void Vec_put(void *self, size_t index, void *value_address) {
     errno = 0;
     Vec(char) *vec = self;
 
     if (index < vec->capacity) {
         memcpy(vec->body + (index * vec->element_size),
-               value_bytes,
+               value_address,
                vec->element_size);
-        if (vec->size < index)
-            vec->size = index;
+        if (vec->size < index) vec->size = index;
     } else {
         errno = ERANGE;
     }
@@ -152,13 +151,13 @@ void Vec_append(void *self, void *other) {
     other_vec->impl.truncate(other_vec, 0);
 }
 
-void Vec_insert(void *self, size_t index, char *value_bytes) {
+void Vec_insert(void *self, size_t index, void *value_address) {
     Vec(char) *vec = self;
     errno = 0;
     if (index == 0) {
-        Vec_push_front(vec, value_bytes);
+        Vec_push_front(vec, value_address);
     } else if (index == vec->size - 1) {
-        Vec_push_back(vec, value_bytes);
+        Vec_push_back(vec, value_address);
     } else {
         void *at = vec->get(vec, index);
         if (at == NULL) {
@@ -168,7 +167,7 @@ void Vec_insert(void *self, size_t index, char *value_bytes) {
         memmove(at + vec->element_size,
                 at,
                 vec->element_size * (vec->size - index));
-        memcpy(at, value_bytes, vec->element_size);
+        memcpy(at, value_address, vec->element_size);
     }
 }
 

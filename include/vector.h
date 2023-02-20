@@ -8,21 +8,14 @@
 #include "list.h"
 #include "macros.h"
 
-#define Vec(T)                                     \
-    struct ADHOC {                                 \
-        T *body;                                   \
-        size_t size;                               \
-        size_t capacity;                           \
-        const size_t element_size;                 \
-        const VecTrait impl;                       \
-        void (*push_back)(struct ADHOC *, T);      \
-        void (*push_front)(struct ADHOC *, T);     \
-        T *(*pop_front)(struct ADHOC *);           \
-        T *(*pop_back)(struct ADHOC *);            \
-        void (*put)(struct ADHOC *, size_t, T);    \
-        T *(*get)(struct ADHOC *, size_t);         \
-        void (*insert)(struct ADHOC *, size_t, T); \
-        T *(*remove)(struct ADHOC *, size_t);      \
+#define Vec(T)                     \
+    struct ADHOC {                 \
+        T *body;                   \
+        size_t size;               \
+        size_t capacity;           \
+        const size_t element_size; \
+        const VecTrait impl;       \
+        DERIVE(LIST, T)            \
     }
 
 /* remove and pop methods return owned values that need to be freed */
@@ -87,7 +80,7 @@
                     .from_arr = NewType##_from_arr};
 
 typedef struct {
-    DERIVE_LIST
+    DERIVE_TRAIT(LIST)
     void (*destroy)(void *self);
     void (*resize)(void *self);
     void (*shrink_to_fit)(void *self);

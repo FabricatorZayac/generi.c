@@ -11,21 +11,14 @@
     }
 
 /* remove and pop methods return owned values that need to be freed */
-#define LinkedList(T)                              \
-    struct ADHOC {                                 \
-        LinkedNode(T) * head;                      \
-        struct TOKENPASTE(ADHOC, _node) * tail;    \
-        size_t size;                               \
-        const size_t element_size;                 \
-        const LinkedListTrait impl;                \
-        void (*push_back)(struct ADHOC *, T);      \
-        void (*push_front)(struct ADHOC *, T);     \
-        T *(*pop_front)(struct ADHOC *);           \
-        T *(*pop_back)(struct ADHOC *);            \
-        void (*put)(struct ADHOC *, size_t, T);    \
-        T *(*get)(struct ADHOC *, size_t);         \
-        void (*insert)(struct ADHOC *, size_t, T); \
-        T *(*remove)(struct ADHOC *, size_t);      \
+#define LinkedList(T)                           \
+    struct ADHOC {                              \
+        LinkedNode(T) * head;                   \
+        struct TOKENPASTE(ADHOC, _node) * tail; \
+        size_t size;                            \
+        const size_t element_size;              \
+        const LinkedListTrait impl;             \
+        DERIVE(LIST, T)                         \
     }
 
 #define DefineLinkedList(NewType, T)                                           \
@@ -67,7 +60,7 @@
     } NewType##_ = {.new = NewType##_new};
 
 typedef struct {
-    DERIVE_LIST
+    DERIVE_TRAIT(LIST)
     void (*destroy)(void *self);
 } LinkedListTrait;
 

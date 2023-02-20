@@ -26,11 +26,11 @@ void ll_append(void *self, void *other) {
     list->size += other_list->size;
 }
 
-void ll_push_back(void *self, char *value_bytes) {
+void ll_push_back(void *self, void *value_address) {
     LinkedList(char *) *list = self;
     typedef LinkedNode(char *) bytenode;
     bytenode *new_node = malloc(sizeof(bytenode));
-    memcpy(&new_node->body, value_bytes, list->element_size);
+    memcpy(&new_node->body, value_address, list->element_size);
     new_node->next = NULL;
 
     if (list->head == NULL) {
@@ -43,11 +43,11 @@ void ll_push_back(void *self, char *value_bytes) {
     list->size++;
 }
 
-void ll_push_front(void *self, char *value_bytes) {
+void ll_push_front(void *self, void *value_address) {
     LinkedList(char *) *list = self;
     typedef LinkedNode(char *) bytenode;
     bytenode *new_node = malloc(sizeof(bytenode));
-    memcpy(&new_node->body, value_bytes, list->element_size);
+    memcpy(&new_node->body, value_address, list->element_size);
     new_node->prev = NULL;
 
     if (list->head == NULL) {
@@ -104,13 +104,13 @@ void *ll_get(void *self, size_t index) {
     return &current->body;
 }
 
-void ll_insert(void *self, size_t index, char *value_bytes) {
+void ll_insert(void *self, size_t index, void *value_address) {
     errno = 0;
     LinkedList(void *) *list = self;
     if (index == 0) {
-        ll_push_front(self, value_bytes);
+        ll_push_front(self, value_address);
     } else if (index == list->size) {
-        ll_push_back(self, value_bytes);
+        ll_push_back(self, value_address);
     } else {
         LinkedNode(void *) *at = (void *)list->get(list, index);
         if (at == NULL) {
@@ -119,7 +119,7 @@ void ll_insert(void *self, size_t index, char *value_bytes) {
         } else {
             typedef LinkedNode(char *) bytenode;
             bytenode *new_node = malloc(sizeof(bytenode));
-            memcpy(&new_node->body, value_bytes, list->element_size);
+            memcpy(&new_node->body, value_address, list->element_size);
 
             new_node->next = (void *)at;
             new_node->prev = (void *)at->prev;
