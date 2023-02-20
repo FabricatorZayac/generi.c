@@ -5,19 +5,15 @@
 
 #include "macros.h"
 
-#define LIST(T, S, ...)                                                        \
-    T *(*get)(S * self, size_t index);                                         \
-    void (*put)(S * self,                                                      \
-                size_t index,                                                  \
-                T __VA_OPT__(*) value##__VA_OPT__(_address));                  \
-    void (*push_back)(S * self, T __VA_OPT__(*) value##__VA_OPT__(_address));  \
-    void (*push_front)(S * self, T __VA_OPT__(*) value##__VA_OPT__(_address)); \
-    T *(*pop_back)(S * self);                                                  \
-    T *(*pop_front)(S * self);                                                 \
-    void (*append)(S * self, S * other);                                       \
-    void (*insert)(S * self,                                                   \
-                   size_t index,                                               \
-                   T __VA_OPT__(*) value##__VA_OPT__(_address));               \
+#define LIST(T, S, ...)                                            \
+    T *(*get)(S * self, size_t index);                             \
+    void (*put)(S * self, size_t index, T __VA_OPT__(*) value);    \
+    void (*push_back)(S * self, T __VA_OPT__(*) value);            \
+    void (*push_front)(S * self, T __VA_OPT__(*) value);           \
+    T *(*pop_back)(S * self);                                      \
+    T *(*pop_front)(S * self);                                     \
+    void (*append)(S * self, S * other);                           \
+    void (*insert)(S * self, size_t index, T __VA_OPT__(*) value); \
     T *(*remove)(S * self, size_t index);
 
 #define PROXY_LIST(S, T)                                                      \

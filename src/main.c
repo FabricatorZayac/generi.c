@@ -6,11 +6,12 @@
 #include <string.h>
 
 #include "linkedlist.h"
+#include "macros.h"
 #include "vector.h"
 
-DefineLinkedList(LinkedListInt, int);
+DefineGeneric(LinkedList, int, LinkedListInt);
 void ll_test() {
-    LinkedListInt foo = LinkedListInt_.new();
+    LinkedListInt foo = New(LinkedListInt);
 
     /* foo.push_back(&foo, 6); */
     foo.push_back(&foo, 5);
@@ -48,7 +49,7 @@ void ll_test() {
     assert(*a == 5);
     free(a);
 
-    LinkedListInt bar = LinkedListInt_.new();
+    LinkedListInt bar = New(LinkedListInt);
 
     bar.push_back(&bar, 100);
     bar.push_back(&bar, 200);
@@ -91,9 +92,9 @@ void ll_test() {
     foo.impl.destroy(&foo);
 }
 
-DefineVec(VecInt, int);
+DefineGeneric(Vec, int, VecInt);
 void vec_test() {
-    VecInt foo = VecInt_.new();
+    VecInt foo = New(VecInt);
 
     foo.push_back(&foo, 6);
     foo.push_back(&foo, 5);
@@ -146,7 +147,7 @@ void vec_test() {
     assert(foo.size == 2);
 
     int arr[] = {7, 5000, 3, 4};
-    VecInt bar = VecInt_.from_arr(arr, sizeof(arr));
+    VecInt bar = VecInt_from_arr(arr, sizeof(arr));
     assert(memcmp(bar.body, arr, sizeof(arr)) == 0);
     assert(bar.size == sizeof(arr) / sizeof(int));
     assert(bar.capacity == sizeof(arr) / sizeof(int));

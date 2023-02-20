@@ -30,10 +30,7 @@
                           .size = 0,                    \
                           .impl = LinkedListImpl,       \
                           PROXY_ASSIGN(LIST, NewType)}; \
-    }                                                   \
-    const struct {                                      \
-        NewType (*new)();                               \
-    } NewType##_ = {.new = NewType##_new};
+    }
 
 typedef struct {
     DERIVE_TRAIT(LIST)

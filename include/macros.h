@@ -11,4 +11,8 @@
 #define PROXY(trait, S, T) TOKENPASTE(PROXY_, trait)(S, T)
 #define PROXY_ASSIGN(trait, S) TOKENPASTE(PROXY_ASSIGN_, trait)(S)
 
+#define DefineGeneric(generic, T, name) TOKENPASTE(Define, generic)(name, T)
+
+#define New(S) TOKENPASTE(S, _new)()
+
 #endif  // MACROS_H_
