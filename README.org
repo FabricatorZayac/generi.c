@@ -1,0 +1,16 @@
+#+title: Readme
+
+* Architecture graph
+#+begin_src dot :file architecture.png
+digraph {
+}
+#+end_src
+
+* Vector
+#+begin_src dot :file vector.png
+digraph {
+    List -> VecTrait
+}
+#+end_src
+
+[[file:vector.png]]
