@@ -1,16 +1,25 @@
 #+title: Readme
 
 * Architecture graph
-#+begin_src dot :file architecture.png
+#+begin_src dot :file architecture.png :exports results
 digraph {
+    "Abstract Trait" -> { "Proxy Template", "Trait Template" }
+    "Proxy Template" -> Proxy
+    "Trait Template" -> "Concrete Trait" -> Implementation -> Proxy
+    "Trait Template" -> "Object Template" -> DefineType -> { Proxy, Constructor }
+    Proxy -> Constructor -> Object
 }
 #+end_src
+
+#+RESULTS:
+[[file:architecture.png]]
 
 * Vector
-#+begin_src dot :file vector.png
+#+begin_src dot :file vector.png :exports results
 digraph {
-    List -> VecTrait
+    "Abstract List Trait" -> VecTrait -> VecImpl
 }
-#+end_src
+#+END_SRC
 
+#+RESULTS:
 [[file:vector.png]]
