@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "hashmap.h"
 #include "linkedlist.h"
+#include "macros.h"
 #include "option.h"
 #include "result.h"
 #include "vector.h"
 
-DefineGeneric(LinkedList, int, LinkedListInt);
+DefineLinkedList(LinkedListInt, int);
 void ll_test() {
     LinkedListInt foo = LinkedListInt_new();
 
@@ -90,7 +92,7 @@ void ll_test() {
     foo.impl.destroy(&foo);
 }
 
-DefineGeneric(Vec, int, VecInt);
+DefineVec(VecInt, int);
 void vec_test() {
     VecInt foo = VecInt_new();
 
@@ -207,10 +209,19 @@ void result_test() {
           of(Err, char *e) printf("%s", e));
 }
 
+DefineHashMap(Doublemap, char *, double);
+void hm_test() {
+    Doublemap map = Doublemap_new();
+    match(map.insert(&map, "threehalfs", 1.5),
+          of(Ok),
+          of(Err, char *e) puts(e));
+}
+
 int main(int argc, char *argv[]) {
     vec_test();
     ll_test();
     option_test();
     result_test();
+    hm_test();
     return 0;
 }

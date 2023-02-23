@@ -8,7 +8,7 @@
 
 typedef Result(struct {}, char *) InsertRes;
 
-#define LIST(T, S, ...)                                                 \
+#define LIST(S, T, ...)                                                 \
     T *(*get)(S * self, size_t index);                                  \
     void (*push_back)(S * self, T __VA_OPT__(*) value);                 \
     void (*push_front)(S * self, T __VA_OPT__(*) value);                \
@@ -28,7 +28,7 @@ typedef Result(struct {}, char *) InsertRes;
     }                                                                         \
     T *S##_pop_back(S *self) { return self->impl.pop_back(self); }            \
     T *S##_pop_front(S *self) { return self->impl.pop_front(self); }          \
-    void S##_append(S *self, S *other) { self->impl.append(self, &other); }   \
+    void S##_append(S *self, S *other) { self->impl.append(self, other); }    \
     InsertRes S##_insert(S *self, size_t index, T value) {                    \
         return self->impl.insert(self, index, &value);                        \
     }                                                                         \

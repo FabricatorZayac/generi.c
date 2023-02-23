@@ -174,6 +174,16 @@ void *Vec_remove(void *self, size_t index) {
     }
 }
 
+// TODO: test
+void Vec_fill(void *self, void *value_address) {
+    Vec(char) *vec = self;
+    for (size_t i = 0; i < vec->capacity; i++) {
+        memcpy(vec->body + (vec->element_size * i),
+               value_address,
+               vec->element_size);
+    }
+}
+
 const VecTrait VecImpl = {.get = Vec_get,
                           .pop_back = Vec_pop_back,
                           .pop_front = Vec_pop_front,

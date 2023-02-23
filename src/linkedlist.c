@@ -6,8 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "list.h"
-
 void ll_destroy(void *self) {
     LinkedList(void *) *list = self;
     LinkedNode(void *) *current = (void *)list->head;
