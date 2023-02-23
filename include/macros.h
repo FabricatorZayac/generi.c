@@ -13,6 +13,7 @@
 
 #define DefineGeneric(generic, T, name) TOKENPASTE(Define, generic)(name, T)
 
-#define New(S) TOKENPASTE(S, _new)()
+#define CONCAT_SEMICOLON(x, ...) x;
+#define OF_EXPAND(x, ...) _##x __VA_OPT__(, )
 
 #endif  // MACROS_H_

@@ -6,12 +6,13 @@
 #include <string.h>
 
 #include "linkedlist.h"
-#include "macros.h"
+#include "option.h"
+#include "result.h"
 #include "vector.h"
 
 DefineGeneric(LinkedList, int, LinkedListInt);
 void ll_test() {
-    LinkedListInt foo = New(LinkedListInt);
+    LinkedListInt foo = LinkedListInt_new();
 
     /* foo.push_back(&foo, 6); */
     foo.push_back(&foo, 5);
@@ -49,7 +50,7 @@ void ll_test() {
     assert(*a == 5);
     free(a);
 
-    LinkedListInt bar = New(LinkedListInt);
+    LinkedListInt bar = LinkedListInt_new();
 
     bar.push_back(&bar, 100);
     bar.push_back(&bar, 200);
@@ -94,7 +95,7 @@ void ll_test() {
 
 DefineGeneric(Vec, int, VecInt);
 void vec_test() {
-    VecInt foo = New(VecInt);
+    VecInt foo = VecInt_new();
 
     foo.push_back(&foo, 6);
     foo.push_back(&foo, 5);
@@ -179,8 +180,48 @@ void vec_test() {
     bar.impl.destroy(&bar);
 }
 
+typedef Option(int) OptionInt;
+OptionInt checked_div(int a, int b) {
+    if (b == 0) {
+        return None(OptionInt);
+    } else {
+        return Some(OptionInt, a / b);
+    }
+}
+void option_test() {
+    int a = 5, b = 0;
+    match(checked_div(a, b),
+          of(Some, int x) printf("floor(%d / %d) = %d\n", a, b, x),
+          of(None) printf("%d / %d division by zero\n", a, b));
+    a = 10, b = 4;
+    match(checked_div(a, b),
+          of(Some, int x) printf("floor(%d / %d) = %d\n", a, b, x),
+          of(None) printf("%d / %d division by zero\n", a, b));
+}
+
+typedef Result(int, char *) ResultInt;
+ResultInt result_div(int a, int b) {
+    if (b == 0) {
+        return Err(ResultInt, "Error: division by zero\n");
+    } else {
+        return Ok(ResultInt, a / b);
+    }
+}
+void result_test() {
+    int a = 5, b = 0;
+    match(result_div(a, b),
+          of(Ok, int x) printf("floor(%d / %d) = %d\n", a, b, x),
+          of(Err, char *e) printf("%s", e));
+    a = 20, b = 3;
+    match(result_div(a, b),
+          of(Ok, int x) printf("floor(%d / %d) = %d\n", a, b, x),
+          of(Err, char *e) printf("%s", e));
+}
+
 int main(int argc, char *argv[]) {
     vec_test();
     ll_test();
+    option_test();
+    result_test();
     return 0;
 }
