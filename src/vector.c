@@ -123,20 +123,6 @@ void Vec_push_front(void *self, void *value_address) {
     vec->size++;
 }
 
-void Vec_put(void *self, size_t index, void *value_address) {
-    errno = 0;
-    Vec(char) *vec = self;
-
-    if (index < vec->capacity) {
-        memcpy(vec->body + (index * vec->element_size),
-               value_address,
-               vec->element_size);
-        if (vec->size < index) vec->size = index;
-    } else {
-        errno = ERANGE;
-    }
-}
-
 void Vec_append(void *self, void *other) {
     Vec(char) *vec = self;
     Vec(char) *other_vec = other;
@@ -151,9 +137,8 @@ void Vec_append(void *self, void *other) {
     other_vec->impl.truncate(other_vec, 0);
 }
 
-void Vec_insert(void *self, size_t index, void *value_address) {
+InsertRes Vec_insert(void *self, size_t index, void *value_address) {
     Vec(char) *vec = self;
-    errno = 0;
     if (index == 0) {
         Vec_push_front(vec, value_address);
     } else if (index == vec->size - 1) {
@@ -161,14 +146,14 @@ void Vec_insert(void *self, size_t index, void *value_address) {
     } else {
         void *at = vec->get(vec, index);
         if (at == NULL) {
-            errno = ERANGE;
-            return;
+            return Err(InsertRes, "Index out of range");
         }
         memmove(at + vec->element_size,
                 at,
                 vec->element_size * (vec->size - index));
         memcpy(at, value_address, vec->element_size);
     }
+    return Ok(InsertRes, {});
 }
 
 void *Vec_remove(void *self, size_t index) {
@@ -194,7 +179,6 @@ const VecTrait VecImpl = {.get = Vec_get,
                           .pop_front = Vec_pop_front,
                           .push_back = Vec_push_back,
                           .push_front = Vec_push_front,
-                          .put = Vec_put,
                           .append = Vec_append,
                           .insert = Vec_insert,
                           .remove = Vec_remove,

@@ -1,8 +1,5 @@
 #include <assert.h>
-#include <errno.h>
-#include <stddef.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "linkedlist.h"
@@ -119,13 +116,6 @@ void vec_test() {
     foo.impl.shrink_to_fit(&foo);
     assert(foo.capacity == 5);
 
-    foo.put(&foo, 2, 2000);
-    assert(*foo.get(&foo, 2) == 2000);
-    assert(errno == 0);
-
-    foo.put(&foo, 10, 4);
-    assert(errno != 0);
-
     assert(foo.get(&foo, 10) == NULL);
     assert(foo.impl.get(&foo, 10) == NULL);
 
@@ -134,8 +124,7 @@ void vec_test() {
     assert(foo.size == 4);
     free(a);
 
-    assert(memcmp(foo.body, (int[]) {6, 5, 2000, 3}, foo.size * sizeof(int))
-           == 0);
+    assert(memcmp(foo.body, (int[]) {6, 5, 4, 3}, foo.size * sizeof(int)) == 0);
 
     foo.impl.shrink_to_fit(&foo);
     assert(foo.capacity == 4);
@@ -171,7 +160,7 @@ void vec_test() {
     assert(memcmp(bar.body, (int[]) {57, 3, 4, 6, 5}, bar.size * sizeof(int))
            == 0);
 
-    bar.insert(&bar, 3, 1000);
+    assert(bar.insert(&bar, 3, 1000).switcher == Ok);
     assert(
         memcmp(bar.body, (int[]) {57, 3, 4, 1000, 6, 5}, bar.size * sizeof(int))
         == 0);

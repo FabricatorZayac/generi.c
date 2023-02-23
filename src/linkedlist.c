@@ -1,13 +1,15 @@
+#include "linkedlist.h"
+
 #include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "linkedlist.h"
+#include "list.h"
 
 void ll_destroy(void *self) {
-    LinkedList(void *)*list = self;
+    LinkedList(void *) *list = self;
     LinkedNode(void *) *current = (void *)list->head;
     while (current != NULL) {
         LinkedNode(void *) *buf = (void *)current;
@@ -104,8 +106,7 @@ void *ll_get(void *self, size_t index) {
     return &current->body;
 }
 
-void ll_insert(void *self, size_t index, void *value_address) {
-    errno = 0;
+InsertRes ll_insert(void *self, size_t index, void *value_address) {
     LinkedList(void *) *list = self;
     if (index == 0) {
         ll_push_front(self, value_address);
@@ -114,8 +115,7 @@ void ll_insert(void *self, size_t index, void *value_address) {
     } else {
         LinkedNode(void *) *at = (void *)list->get(list, index);
         if (at == NULL) {
-            errno = ERANGE;
-            return;
+            return Err(InsertRes, "Index out of range");
         } else {
             typedef LinkedNode(char *) bytenode;
             bytenode *new_node = malloc(sizeof(bytenode));
@@ -129,6 +129,7 @@ void ll_insert(void *self, size_t index, void *value_address) {
             list->size++;
         }
     }
+    return Ok(InsertRes, {});
 }
 
 // TODO test
