@@ -50,6 +50,7 @@
         return self;                                       \
     }
 
+// Concrete Trait
 typedef struct {
     DERIVE_TRAIT(LIST)
     void (*destroy)(void *self);
@@ -61,6 +62,7 @@ typedef struct {
     void (*fill)(void *self, void *value_address);
 } VecTrait;
 
+// Implementation
 extern const VecTrait VecImpl;
 
 #endif // VECTOR_H_

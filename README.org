@@ -1,25 +1,51 @@
-#+title: Readme
-
 * Architecture graph
 #+begin_src dot :file architecture.png :exports results
 digraph {
-    "Abstract Trait" -> { "Proxy Template", "Trait Template" }
-    "Proxy Template" -> Proxy
-    "Trait Template" -> "Concrete Trait" -> Implementation -> Proxy
-    "Trait Template" -> "Object Template" -> DefineType -> { Proxy, Constructor }
-    Proxy -> Constructor -> Object
+    compound=true
+    subgraph cluster_0 {
+        label="Abstract Trait Header"
+        color=blue
+        "Trait Template"
+        "Proxy Template"
+        "Proxy Assignment Template"
+    }
+    subgraph cluster_3 {
+        label="Data type header"
+        color=blue
+        subgraph cluster_1 {
+            label=DefineType
+            color=darkgreen
+            "MethodProxy"
+            "Constructor"
+            subgraph cluster_2 {
+                label="Additional constructors"
+                color=orange
+                C [style=invis]
+            }
+        }
+        "Concrete Trait"
+        "Object Template"
+        Implementation
+    }
+    subgraph cluster_4 {
+        label="Data type implementation source"
+        Methods
+        "extern Implementation"
+    }
+    subgraph A {
+        edge [dir=none]
+        "extern Implementation" -> Implementation
+    }
+    "extern Implementation" [label=Implementation]
+    Methods -> "extern Implementation"
+    "Proxy Template" -> {"MethodProxy", "Proxy Assignment Template"}
+    "Trait Template" -> { "Concrete Trait", "Object Template" }
+    "Concrete Trait" -> Implementation
+    "Object Template" -> "MethodProxy" [lhead=cluster_1]
+    { "MethodProxy", "Proxy Assignment Template", Implementation } -> Constructor -> C [lhead=cluster_2]
+    { Constructor, C } -> Object [ltail=cluster_2]
 }
 #+end_src
 
 #+RESULTS:
 [[file:architecture.png]]
-
-* Vector
-#+begin_src dot :file vector.png :exports results
-digraph {
-    "Abstract List Trait" -> VecTrait -> VecImpl
-}
-#+END_SRC
-
-#+RESULTS:
-[[file:vector.png]]
