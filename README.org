@@ -1,4 +1,9 @@
-* Architecture graph
+Originally this was supposed to just be a little lib where I implement a bunch of data structures, but try to do it generically.
+Now I implemented algebraic data types and I think this is starting to get out of control.
+For how pattern matching should look like I took some inspo from https://github.com/Hirrolot/metalang99.
+Then I realized that the way I work with `__VA_ARGS__` looks a little bit like Lisp.
+
+* Architecture graph for generic structs and traits
 #+begin_src dot :file architecture.png :exports results
 digraph {
     compound=true
