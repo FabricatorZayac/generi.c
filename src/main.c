@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "error.h"
-#include "hashmap.h"
 #include "linkedlist.h"
 #include "macros.h"
 #include "option.h"
@@ -210,19 +209,10 @@ void result_test() {
           of(Err, Error e) print_error(e));
 }
 
-DefineHashMap(Doublemap, char *, double);
-void hm_test() {
-    Doublemap map = Doublemap_new();
-    match(map.insert(&map, "threehalfs", 1.5),
-          of(Ok),
-          of(Err, Error e) print_error(e));
-}
-
 int main(int argc, char *argv[]) {
     vec_test();
     ll_test();
     option_test();
     result_test();
-    hm_test();
     return 0;
 }

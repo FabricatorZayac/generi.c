@@ -9,8 +9,8 @@
 #define _GET_FIELD(x, ...) __VA_OPT__(__VA_ARGS__ x;)
 #define GET_FIELD(x, ...) _GET_FIELD x
 
-#define data(...)                                         \
-    struct {                                              \
+#define data(name, ...)                                   \
+    struct name {                                         \
         union {                                           \
             FOREACH(GET_FIELD, __VA_ARGS__)               \
         } body;                                           \
