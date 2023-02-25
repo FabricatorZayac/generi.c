@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "error.h"
 #include "hashmap.h"
 #include "linkedlist.h"
 #include "macros.h"
@@ -190,10 +191,10 @@ void option_test() {
           of(None) printf("%d / %d division by zero\n", a, b));
 }
 
-typedef Result(int, char *) ResultInt;
+typedef Result(int, Error) ResultInt;
 ResultInt result_div(int a, int b) {
     if (b == 0) {
-        return Err(ResultInt, "Error: division by zero\n");
+        return Err(ResultInt, Error("division by zero"));
     } else {
         return Ok(ResultInt, a / b);
     }
@@ -202,11 +203,11 @@ void result_test() {
     int a = 5, b = 0;
     match(result_div(a, b),
           of(Ok, int x) printf("floor(%d / %d) = %d\n", a, b, x),
-          of(Err, char *e) printf("%s", e));
+          of(Err, Error e) print_error(e));
     a = 20, b = 3;
     match(result_div(a, b),
           of(Ok, int x) printf("floor(%d / %d) = %d\n", a, b, x),
-          of(Err, char *e) printf("%s", e));
+          of(Err, Error e) print_error(e));
 }
 
 DefineHashMap(Doublemap, char *, double);
@@ -214,7 +215,7 @@ void hm_test() {
     Doublemap map = Doublemap_new();
     match(map.insert(&map, "threehalfs", 1.5),
           of(Ok),
-          of(Err, char *e) puts(e));
+          of(Err, Error e) print_error(e));
 }
 
 int main(int argc, char *argv[]) {

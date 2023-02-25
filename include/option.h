@@ -3,11 +3,8 @@
 
 #include "sumtype.h"
 
-#define _None
-#define _Some(T) T Some
-
 enum Option { None, Some };
-#define Option(T) sumtype(Option, _None, _Some(T))
+#define Option(T) generic_sumtype(Option, (None), (Some, T))
 
 #define None(O) \
     (O) { .switcher = None }

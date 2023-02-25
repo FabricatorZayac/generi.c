@@ -63,8 +63,17 @@ void Vec_truncate(void *self, size_t new_size) {
     }
 }
 
-void *Vec_get(void *self, size_t index) {
+void *Vec_get_mut(void *self, size_t index) {
     Vec(char) *vec = self;
+    if (index < vec->capacity) {
+        return &vec->body[vec->element_size * index];
+    } else {
+        return NULL;
+    }
+}
+
+const void *Vec_get(const void *self, const size_t index) {
+    const Vec(char) *vec = self;
     if (index < vec->capacity) {
         return &vec->body[vec->element_size * index];
     } else {
@@ -144,9 +153,9 @@ InsertRes Vec_insert(void *self, size_t index, void *value_address) {
     } else if (index == vec->size - 1) {
         Vec_push_back(vec, value_address);
     } else {
-        void *at = vec->get(vec, index);
+        void *at = vec->get_mut(vec, index);
         if (at == NULL) {
-            return Err(InsertRes, "Index out of range");
+            return Err(InsertRes, Error("Index out of range"));
         }
         memmove(at + vec->element_size,
                 at,
@@ -163,7 +172,7 @@ void *Vec_remove(void *self, size_t index) {
     } else if (index == vec->size - 1) {
         return vec->pop_back(vec);
     } else {
-        void *at = vec->get(vec, index);
+        void *at = vec->get_mut(vec, index);
         if (at == NULL) return NULL;
         void *result = memcpy(malloc(vec->element_size), at, vec->element_size);
         memmove(at,
@@ -182,19 +191,14 @@ void Vec_fill(void *self, void *value_address) {
                value_address,
                vec->element_size);
     }
+    vec->size = vec->capacity;
 }
 
-const VecTrait VecImpl = {.get = Vec_get,
-                          .pop_back = Vec_pop_back,
-                          .pop_front = Vec_pop_front,
-                          .push_back = Vec_push_back,
-                          .push_front = Vec_push_front,
-                          .append = Vec_append,
-                          .insert = Vec_insert,
-                          .remove = Vec_remove,
+const VecTrait VecImpl = {PROXY_ASSIGN(LIST, Vec),
                           .destroy = Vec_destroy,
                           .resize = Vec_resize,
                           .shrink_to = Vec_shrink_to,
                           .shrink_to_fit = Vec_shrink_to_fit,
                           .reserve = Vec_reserve,
-                          .truncate = Vec_truncate};
+                          .truncate = Vec_truncate,
+                          .fill = Vec_fill};

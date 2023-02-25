@@ -86,9 +86,27 @@ void *ll_pop_front(void *self) {
     }
 }
 
-void *ll_get(void *self, size_t index) {
+const void *ll_get(const void *self, const size_t index) {
+    const LinkedList(void *) *list = self;
+    const LinkedNode(void *) * current;
+    if (index >= list->size || index < 0) return NULL;
+    if (index < list->size / 2) {
+        current = (void *)list->head;
+        for (size_t i = 0; i < index; i++) {
+            current = current->next;
+        }
+    } else {
+        current = (void *)list->tail;
+        for (size_t i = list->size - 1; i > index; i--) {
+            current = current->prev;
+        }
+    }
+    return &current->body;
+}
+
+void *ll_get_mut(void *self, size_t index) {
     LinkedList(void *) *list = self;
-    LinkedNode(void *) *current;
+    LinkedNode(void *) * current;
     if (index >= list->size || index < 0) return NULL;
     if (index < list->size / 2) {
         current = (void *)list->head;
@@ -156,6 +174,7 @@ const LinkedListTrait LinkedListImpl = {.push_back = ll_push_back,
                                         .pop_front = ll_pop_front,
                                         .append = ll_append,
                                         .get = ll_get,
+                                        .get_mut = ll_get_mut,
                                         .remove = ll_remove,
                                         .insert = ll_insert,
                                         .destroy = ll_destroy};
