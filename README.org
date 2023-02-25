@@ -1,0 +1,56 @@
+Originally this was supposed to just be a little lib where I implement a bunch of data structures, but try to do it generically.
+Now I implemented algebraic data types and I think this is starting to get out of control.
+For how pattern matching should look like I took some inspo from https://github.com/Hirrolot/metalang99.
+Then I realized that the way I work with `__VA_ARGS__` looks a little bit like Lisp.
+
+* Architecture graph for generic structs and traits
+#+begin_src dot :file architecture.png :exports results
+digraph {
+    compound=true
+    subgraph cluster_0 {
+        label="Abstract Trait Header"
+        color=blue
+        "Trait Template"
+        "Proxy Template"
+        "Proxy Assignment Template"
+    }
+    subgraph cluster_3 {
+        label="Data type header"
+        color=blue
+        subgraph cluster_1 {
+            label=DefineType
+            color=darkgreen
+            "MethodProxy"
+            "Constructor"
+            subgraph cluster_2 {
+                label="Additional constructors"
+                color=orange
+                C [style=invis]
+            }
+        }
+        "Concrete Trait"
+        "Object Template"
+        Implementation
+    }
+    subgraph cluster_4 {
+        label="Data type implementation source"
+        Methods
+        "extern Implementation"
+    }
+    subgraph A {
+        edge [dir=none]
+        "extern Implementation" -> Implementation
+    }
+    "extern Implementation" [label=Implementation]
+    Methods -> "extern Implementation"
+    "Proxy Template" -> {"MethodProxy", "Proxy Assignment Template"}
+    "Trait Template" -> { "Concrete Trait", "Object Template" }
+    "Concrete Trait" -> Implementation
+    "Object Template" -> "MethodProxy" [lhead=cluster_1]
+    { "MethodProxy", "Proxy Assignment Template", Implementation } -> Constructor -> C [lhead=cluster_2]
+    { Constructor, C } -> Object [ltail=cluster_2]
+}
+#+end_src
+
+#+RESULTS:
+[[file:architecture.png]]
