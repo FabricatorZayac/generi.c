@@ -6,9 +6,7 @@
 enum Result { Ok, Err };
 #define Result(T, E) generic_sumtype(Result, (Ok, T), (Err, E))
 
-#define Ok(R, t) \
-    (R) { .switcher = Ok, .body.Ok = t }
-#define Err(R, e) \
-    (R) { .switcher = Err, .body.Err = e }
+#define Ok(R, t) build_data(R, Ok, t)
+#define Err(R, e) build_data(R, Err, e)
 
 #endif  // RESULT_H_
