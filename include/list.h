@@ -20,27 +20,33 @@ typedef Result(struct {}, Error) InsertRes;
     InsertRes (*insert)(S * self, size_t index, T __VA_OPT__(*) value); \
     T *(*remove)(S * self, size_t index);
 
-#define PROXY_LIST(S, T)                                                   \
-    const T *S##_get(const S *self, const size_t index) {                  \
-        return self->impl.get(self, index);                                \
-    }                                                                      \
-    T *S##_get_mut(S *self, size_t index) {                                \
-        return self->impl.get_mut(self, index);                            \
-    }                                                                      \
-    void S##_push_back(S *self, T value) {                                 \
-        self->impl.push_back(self, &value);                                \
-    }                                                                      \
-    void S##_push_front(S *self, T value) {                                \
-        self->impl.push_front(self, &value);                               \
-    }                                                                      \
-    T *S##_pop_back(S *self) { return self->impl.pop_back(self); }         \
-    T *S##_pop_front(S *self) { return self->impl.pop_front(self); }       \
-    void S##_append(S *self, S *other) { self->impl.append(self, other); } \
-    InsertRes S##_insert(S *self, size_t index, T value) {                 \
-        return self->impl.insert(self, index, &value);                     \
-    }                                                                      \
-    T *S##_remove(S *self, size_t index) {                                 \
-        return self->impl.remove(self, index);                             \
+#define PROXY_LIST(S, T)                                                 \
+    static inline const T *S##_get(const S *self, const size_t index) {  \
+        return self->impl.get(self, index);                              \
+    }                                                                    \
+    static inline T *S##_get_mut(S *self, size_t index) {                \
+        return self->impl.get_mut(self, index);                          \
+    }                                                                    \
+    static inline void S##_push_back(S *self, T value) {                 \
+        self->impl.push_back(self, &value);                              \
+    }                                                                    \
+    static inline void S##_push_front(S *self, T value) {                \
+        self->impl.push_front(self, &value);                             \
+    }                                                                    \
+    static inline T *S##_pop_back(S *self) {                             \
+        return self->impl.pop_back(self);                                \
+    }                                                                    \
+    static inline T *S##_pop_front(S *self) {                            \
+        return self->impl.pop_front(self);                               \
+    }                                                                    \
+    static inline void S##_append(S *self, S *other) {                   \
+        self->impl.append(self, other);                                  \
+    }                                                                    \
+    static inline InsertRes S##_insert(S *self, size_t index, T value) { \
+        return self->impl.insert(self, index, &value);                   \
+    }                                                                    \
+    static inline T *S##_remove(S *self, size_t index) {                 \
+        return self->impl.remove(self, index);                           \
     }
 
 #define PROXY_ASSIGN_LIST(S)                                                \

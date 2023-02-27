@@ -21,33 +21,33 @@
     }
 
 /* remove and pop methods return owned values that need to be freed */
-#define DefineVec(NewType, T)                              \
-    typedef Vec(T) NewType;                                \
-    PROXY(LIST, NewType, T)                                \
-    void NewType##_fill(NewType *self, T value) {          \
-        self->impl.fill(self, &value);                     \
-    }                                                      \
-    NewType NewType##_new() {                              \
-        return (NewType) {.size = 0,                       \
-                          .capacity = 0,                   \
-                          .element_size = sizeof(T),       \
-                          .body = NULL,                    \
-                          .impl = VecImpl,                 \
-                          .fill = NewType##_fill,          \
-                          PROXY_ASSIGN(LIST, NewType)};    \
-    }                                                      \
-    NewType NewType##_with_capacity(size_t capacity) {     \
-        NewType self = NewType##_new();                    \
-        self.capacity = capacity;                          \
-        self.body = malloc(capacity * sizeof(T));          \
-        return self;                                       \
-    }                                                      \
-    NewType NewType##_from_arr(T *arr, size_t bytecap) {   \
-        NewType self = NewType##_new();                    \
-        self.size = bytecap / sizeof(T);                   \
-        self.capacity = bytecap / sizeof(T);               \
-        self.body = memcpy(malloc(bytecap), arr, bytecap); \
-        return self;                                       \
+#define DefineVec(NewType, T)                                          \
+    typedef Vec(T) NewType;                                            \
+    PROXY(LIST, NewType, T)                                            \
+    static inline void NewType##_fill(NewType *self, T value) {        \
+        self->impl.fill(self, &value);                                 \
+    }                                                                  \
+    static inline NewType NewType##_new() {                            \
+        return (NewType) {.size = 0,                                   \
+                          .capacity = 0,                               \
+                          .element_size = sizeof(T),                   \
+                          .body = NULL,                                \
+                          .impl = VecImpl,                             \
+                          .fill = NewType##_fill,                      \
+                          PROXY_ASSIGN(LIST, NewType)};                \
+    }                                                                  \
+    static inline NewType NewType##_with_capacity(size_t capacity) {   \
+        NewType self = NewType##_new();                                \
+        self.capacity = capacity;                                      \
+        self.body = malloc(capacity * sizeof(T));                      \
+        return self;                                                   \
+    }                                                                  \
+    static inline NewType NewType##_from_arr(T *arr, size_t bytecap) { \
+        NewType self = NewType##_new();                                \
+        self.size = bytecap / sizeof(T);                               \
+        self.capacity = bytecap / sizeof(T);                           \
+        self.body = memcpy(malloc(bytecap), arr, bytecap);             \
+        return self;                                                   \
     }
 
 // Concrete Trait
