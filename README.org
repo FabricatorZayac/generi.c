@@ -6,49 +6,46 @@ Then I realized that the way I work with `__VA_ARGS__` looks a little bit like L
 * Architecture graph for generic structs and traits
 #+begin_src dot :file architecture.png :exports results
 digraph {
+    rankdir="LR"
     compound=true
     subgraph cluster_0 {
+        rank="same"
         label="Abstract Trait Header"
         color=blue
-        "Trait Template"
         "Proxy Template"
         "Proxy Assignment Template"
+        "Trait Template"
     }
     subgraph cluster_3 {
+        rank="same"
         label="Data type header"
         color=blue
         subgraph cluster_1 {
             label=DefineType
             color=darkgreen
-            "MethodProxy"
-            "Constructor"
-            subgraph cluster_2 {
-                label="Additional constructors"
-                color=orange
-                C [style=invis]
-            }
+            MethodProxy
+            Constructor
         }
         "Concrete Trait"
-        "Object Template"
-        Implementation
+        Impl
     }
     subgraph cluster_4 {
-        label="Data type implementation source"
+        rank="same"
+        label="Data type Impl source"
         Methods
-        "extern Implementation"
+        "extern Impl"
     }
     subgraph A {
         edge [dir=none]
-        "extern Implementation" -> Implementation
+        "extern Impl" -> Impl
     }
-    "extern Implementation" [label=Implementation]
-    Methods -> "extern Implementation"
-    "Proxy Template" -> {"MethodProxy", "Proxy Assignment Template"}
-    "Trait Template" -> { "Concrete Trait", "Object Template" }
-    "Concrete Trait" -> Implementation
-    "Object Template" -> "MethodProxy" [lhead=cluster_1]
-    { "MethodProxy", "Proxy Assignment Template", Implementation } -> Constructor -> C [lhead=cluster_2]
-    { Constructor, C } -> Object [ltail=cluster_2]
+    "extern Impl" [label=Impl]
+    Methods -> "extern Impl"
+    "Proxy Template" -> {"Proxy Assignment Template", MethodProxy}
+    "Trait Template" -> "Concrete Trait"
+    "Concrete Trait" -> Impl
+    { "MethodProxy", "Proxy Assignment Template", Impl } -> Constructor
+    Constructor -> Object [ltail=cluster_2]
 }
 #+end_src
 

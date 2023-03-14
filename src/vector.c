@@ -8,12 +8,14 @@
 
 #include "list.h"
 
+DefineVec(ByteVec, char);
+
 void Vec_destroy(void *self) {
-    free(((Vec(void *) *)self)->body);
+    free(((ByteVec *)self)->body);
 }
 
 void Vec_resize(void *self) {
-    Vec(void *) *vec = self;
+    ByteVec *vec = self;
     if (vec->size == 0) {
         vec->body = malloc(vec->element_size);
         vec->capacity = 1;
@@ -24,7 +26,7 @@ void Vec_resize(void *self) {
 }
 
 void Vec_reserve(void *self, size_t additional) {
-    Vec(void *) *vec = self;
+    ByteVec *vec = self;
     if (vec->capacity < vec->size + additional) {
         vec->body =
             realloc(vec->body, (vec->size + additional) * vec->element_size);
@@ -33,7 +35,7 @@ void Vec_reserve(void *self, size_t additional) {
 }
 
 void Vec_shrink_to_fit(void *self) {
-    Vec(void *) *vec = self;
+    ByteVec *vec = self;
     if (vec->capacity > vec->size) {
         vec->body = realloc(vec->body, vec->element_size * vec->size);
         vec->capacity = vec->size;
@@ -41,7 +43,7 @@ void Vec_shrink_to_fit(void *self) {
 }
 
 void Vec_shrink_to(void *self, size_t min_cap) {
-    Vec(void *) *vec = self;
+    ByteVec *vec = self;
     if (vec->capacity > vec->size && vec->capacity > min_cap) {
         size_t new_cap;
         if (min_cap > vec->size) {
@@ -55,7 +57,7 @@ void Vec_shrink_to(void *self, size_t min_cap) {
 }
 
 void Vec_truncate(void *self, size_t new_size) {
-    Vec(void *) *vec = self;
+    ByteVec *vec = self;
     if (new_size <= vec->size) {
         vec->body = realloc(vec->body, new_size * vec->element_size);
         vec->capacity = new_size;
@@ -64,7 +66,7 @@ void Vec_truncate(void *self, size_t new_size) {
 }
 
 void *Vec_get_mut(void *self, size_t index) {
-    Vec(char) *vec = self;
+    ByteVec *vec = self;
     if (index < vec->capacity) {
         return &vec->body[vec->element_size * index];
     } else {
@@ -73,7 +75,7 @@ void *Vec_get_mut(void *self, size_t index) {
 }
 
 const void *Vec_get(const void *self, const size_t index) {
-    const Vec(char) *vec = self;
+    const ByteVec *vec = self;
     if (index < vec->capacity) {
         return &vec->body[vec->element_size * index];
     } else {
@@ -82,7 +84,7 @@ const void *Vec_get(const void *self, const size_t index) {
 }
 
 void *Vec_pop_back(void *self) {
-    Vec(char) *vec = self;
+    ByteVec *vec = self;
     if (vec->size != 0) {
         vec->size--;
         void *result = memcpy(malloc(vec->element_size),
@@ -95,7 +97,7 @@ void *Vec_pop_back(void *self) {
 }
 
 void *Vec_pop_front(void *self) {
-    Vec(char) *vec = self;
+    ByteVec *vec = self;
     if (vec->size != 0) {
         void *result =
             memcpy(malloc(vec->element_size), &vec->body[0], vec->element_size);
@@ -110,7 +112,7 @@ void *Vec_pop_front(void *self) {
 }
 
 void Vec_push_back(void *self, void *value_address) {
-    Vec(char) *vec = self;
+    ByteVec *vec = self;
     if (vec->size >= vec->capacity) {
         vec->impl.resize(vec);
     }
@@ -121,7 +123,7 @@ void Vec_push_back(void *self, void *value_address) {
 }
 
 void Vec_push_front(void *self, void *value_address) {
-    Vec(char) *vec = self;
+    ByteVec *vec = self;
     if (vec->size >= vec->capacity) {
         Vec_resize(vec);
     }
@@ -133,8 +135,8 @@ void Vec_push_front(void *self, void *value_address) {
 }
 
 void Vec_append(void *self, void *other) {
-    Vec(char) *vec = self;
-    Vec(char) *other_vec = other;
+    ByteVec *vec = self;
+    ByteVec *other_vec = other;
 
     if (vec->capacity < vec->size + other_vec->size) {
         vec->impl.reserve(vec, other_vec->size);
@@ -147,7 +149,7 @@ void Vec_append(void *self, void *other) {
 }
 
 InsertRes Vec_insert(void *self, size_t index, void *value_address) {
-    Vec(char) *vec = self;
+    ByteVec *vec = self;
     if (index == 0) {
         Vec_push_front(vec, value_address);
     } else if (index == vec->size - 1) {
@@ -166,7 +168,7 @@ InsertRes Vec_insert(void *self, size_t index, void *value_address) {
 }
 
 void *Vec_remove(void *self, size_t index) {
-    Vec(char) *vec = self;
+    ByteVec *vec = self;
     if (index == 0) {
         return vec->pop_front(vec);
     } else if (index == vec->size - 1) {
@@ -185,7 +187,7 @@ void *Vec_remove(void *self, size_t index) {
 
 // TODO: test
 void Vec_fill(void *self, void *value_address) {
-    Vec(char) *vec = self;
+    ByteVec *vec = self;
     for (size_t i = 0; i < vec->capacity; i++) {
         memcpy(vec->body + (vec->element_size * i),
                value_address,
